@@ -1,0 +1,42 @@
+import { Component } from '@angular/core';
+import { ApiService } from '../api.service';
+import { Router } from '@angular/router';
+
+
+
+@Component({
+  selector: 'app-all-flows',
+  templateUrl: './all-flows.component.html',
+  styleUrl: './all-flows.component.css'
+})
+
+
+export class AllFlowsComponent {
+
+  flows: any[] = [];
+
+  constructor(
+    private apiService: ApiService,
+    private router: Router
+  ) { }
+
+  ngOnInit(): void {
+    this.apiService.getAllFlows().subscribe({
+      next:(response: any) => {
+        this.flows = response.map((flow: { createdOn: { $date: string | number | Date; }; }) => ({
+          ...flow,
+          createdOn: new Date(flow.createdOn.$date)
+          
+        }));
+      },
+      error(err){
+        console.log(err)
+      },
+    })
+  }
+
+  onCardClick(flow: any): void {
+    this.router.navigate(['/single-flow', flow]);
+  }
+
+}

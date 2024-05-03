@@ -1,0 +1,33 @@
+
+.card {
+    border: 1px solid #ddd; /* Add a border */
+    border-radius: 8px; /* Add rounded corners */
+    transition: box-shadow 0.3s; /* Add smooth transition */
+    margin-bottom: 20px; /* Add margin bottom to create a gap */
+  }
+  
+  .card:hover {
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1); /* Add shadow on hover */
+  }
+  
+  .card-title {
+    font-size: 1.25rem; /* Increase title font size */
+    margin-bottom: 0.5rem; /* Add some space below title */
+    padding: 10px;
+  }
+  
+  .card-text {
+    color: #666; /* Change text color */
+    padding: 10px; /* Add padding for text inside card */
+  }
+  
+  .container {
+    padding: 20px; /* Add padding to the container */
+  }
+  
+  @media (max-width: 768px) {
+    .card {
+      margin-bottom: 20px; /* Add margin between cards on small screens */
+    }
+  }
+  
