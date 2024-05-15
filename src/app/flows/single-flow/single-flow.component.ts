@@ -11,6 +11,8 @@ export class SingleFlowComponent {
 
   flowData:any
   isExpanded: boolean = true
+  responseData: any;
+
   constructor(private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -36,21 +38,29 @@ export class SingleFlowComponent {
   }
 
   showImage: boolean = false;
-enlargedImageUrl: string = '';
+  enlargedImageUrl: string = '';
 
-showLargeImage(imageUrl: string) {
-  this.showImage = true;
-  this.enlargedImageUrl = imageUrl;
-}
+  showLargeImage(imageUrl: string, id: string) {
+    this.showImage = true;
+    this.enlargedImageUrl = imageUrl;
+    this.apiService.getComponents(id).subscribe({
+      next: (resp: any) => {
+        this.responseData = resp.components
+        console.log(resp)
+      },
+      error(err){
+      },
+    })
+  }
 
-hideLargeImage() {
-  this.showImage = false;
-  this.enlargedImageUrl = '';
-}
+  hideLargeImage() {
+    this.showImage = false;
+    this.enlargedImageUrl = '';
+  }
 
-toggleNavbar() {
-  this.isExpanded = !this.isExpanded;
-}
+  toggleNavbar() {
+    this.isExpanded = !this.isExpanded;
+  }
 
 
 }

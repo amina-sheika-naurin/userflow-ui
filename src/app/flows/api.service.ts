@@ -18,4 +18,8 @@ export class ApiService {
     return this.http.get<any>(this.baseUrl + 'getflow?flow_id=' + flowId);
   }
 
+  getComponents(id: string):  Observable<any> {
+    return this.http.get<any>(this.baseUrl + 'getcomponents?baseimage_id=' + id);
+  }
+
 }

@@ -8,7 +8,7 @@
         <div *ngFor="let item of flowData.data" class="card-container">
           <mat-card class="card" [ngClass]="{'image-card': isImage(item), 'object-card': !isImage(item)}">
             <div *ngIf="isImage(item)" class="image-container">
-              <img (click)="showLargeImage(item.image)" [src]="convertBase64ToImage(item.image)" alt="Screenshot" />
+              <img (click)="showLargeImage(item.image, item._id)" [src]="convertBase64ToImage(item.image)" alt="Screenshot" />
             </div>
             <div *ngIf="!isImage(item)" class="details-container">
               <div class="object-content">
@@ -22,6 +22,11 @@
   </div>
 
   <div class="image-display" *ngIf="showImage">
-    <img [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" />
+    <div class="image-container">
+      <img [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" />
+    </div>
+    <div class="response-container">
+      <pre>{{ responseData | json }}</pre>
+    </div>
   </div>
 </div>
