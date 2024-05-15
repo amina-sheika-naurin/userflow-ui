@@ -14,10 +14,10 @@ export class SingleFlowComponent {
   responseData: any;
   shape:any;
   aspecRatio: string | undefined;
-  boxLeft: number = 100;
-  boxTop: number = 100;
-  boxWidth: number = 50;
-  boxHeight: number = 50;
+  boxLeft: number = 0;
+  boxTop: number = 0;
+  boxWidth: number = 0;
+  boxHeight: number = 0;
   constructor(private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -52,6 +52,7 @@ export class SingleFlowComponent {
 
   showLargeImage(imageUrl: string, id: string) {
     this.showImage = true;
+    this.isExpanded = false;
     this.enlargedImageUrl = imageUrl;
     this.apiService.getComponents(id).subscribe({
       next: (resp: any) => {
@@ -71,17 +72,15 @@ export class SingleFlowComponent {
     this.isExpanded = !this.isExpanded;
   }
 
-  highlightStyles: { [key: string]: string } = {};
 
   highlightArea(position: any) {
     const height = this.shape[0];
     const width = this.shape[1];
 
-    this.aspecRatio = `${(height / width) * 100}%`; 
+    this.aspecRatio = `${(height / width) * 100}%`;
 
     const { row_min, row_max, column_min, column_max } = position;
 
-    // Calculate box dimensions
     this.boxLeft = (column_min / width) * 100;
     this.boxTop = (row_min / height) * 100;
     this.boxWidth = ((column_max - column_min) / width) * 100;
@@ -89,7 +88,10 @@ export class SingleFlowComponent {
   }
 
   removeHighlight() {
-    this.highlightStyles = {};
+    this.boxLeft = 0
+    this.boxTop = 0
+    this.boxWidth = 0
+    this.boxHeight = 0
   }
 
   

@@ -14,7 +14,7 @@
 
 .content {
   flex: 1;
-  padding: 20px;
+  /* padding: 20px; */
 }
 
 .expanded .navbar {
@@ -101,19 +101,16 @@
 
 .image-container {
   position: relative;
-  display: inline-block;
-
 }
 
 .image-container img {
+  display: block;
   max-width: 100%;
   max-height: 100%;
   object-fit: contain;
 }
 
-.image-container img.highlighted {
-  clip-path: polygon(0 0, 0 0, 0 0, 0 0); /* Initial clip-path to hide image */
-}
+
 
 .response-container {
   width: 350px; /* Adjust width as needed */
