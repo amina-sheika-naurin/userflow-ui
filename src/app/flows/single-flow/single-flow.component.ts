@@ -10,7 +10,7 @@ import { ApiService } from '../api.service';
 export class SingleFlowComponent {
 
   flowData:any
-  isExpanded: boolean = false;
+  isExpanded: boolean = true
   constructor(private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -51,4 +51,6 @@ hideLargeImage() {
 toggleNavbar() {
   this.isExpanded = !this.isExpanded;
 }
+
+
 }

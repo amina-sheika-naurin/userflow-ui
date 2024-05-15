@@ -1,65 +1,27 @@
-<!-- <div class="container container-wrapper" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
-    <div *ngFor="let item of flowData.data" class="card-container">
-      <mat-card class="card" [ngClass]="{'image-card': isImage(item), 'object-card': !isImage(item)}">
-        <div *ngIf="isImage(item)" class="image-container">
-          <img [src]="convertBase64ToImage(item.image)" alt="Screenshot" />
-        </div>
-        <div *ngIf="!isImage(item)" class="details-container">
-          <div class="object-content">
-            <img [src]="convertBase64ToImage(item.object)" alt="Screenshot" />
-          </div>
-        </div>
-      </mat-card>
-    </div>
-  </div>
-   -->
-
-   <!-- <div class="container container-wrapper" fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
-    <div *ngFor="let item of flowData.data" class="card-container">
-      <mat-card class="card" [ngClass]="{'image-card': isImage(item), 'object-card': !isImage(item)}">
-        <div *ngIf="isImage(item)" class="image-container">
-          <img (click)="showLargeImage(item.image)" [src]="convertBase64ToImage(item.image)" alt="Screenshot" />  </div>
-        <div *ngIf="!isImage(item)" class="details-container">
-          <div class="object-content">
-            <img [src]="convertBase64ToImage(item.object)" alt="Screenshot" />
-          </div>
-        </div>
-      </mat-card>
-    </div>
-  </div> -->
-
-  <div class="container-wrapper" [ngClass]="{'expanded': isExpanded, 'collapsed': !isExpanded}">
-    <div class="navbar">
-        <button (click)="toggleNavbar()">
-            <mat-icon>{{ isExpanded ? 'keyboard_arrow_left' : 'keyboard_arrow_right' }}</mat-icon>
-
-        </button>
-        <div class="content">
-            <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
-              <div *ngFor="let item of flowData.data" class="card-container">
-                <mat-card class="card" [ngClass]="{'image-card': isImage(item), 'object-card': !isImage(item)}">
-                  <div *ngIf="isImage(item)" class="image-container">
-                    <img (click)="showLargeImage(item.image)" [src]="convertBase64ToImage(item.image)" alt="Screenshot" />
-                  </div>
-                  <div *ngIf="!isImage(item)" class="details-container">
-                    <div class="object-content">
-                      <img [src]="convertBase64ToImage(item.object)" alt="Screenshot" />
-                    </div>
-                  </div>
-                </mat-card>
+<div class="container-wrapper" [ngClass]="{'expanded': isExpanded, 'collapsed': !isExpanded}">
+  <div class="navbar">
+    <button (click)="toggleNavbar()">
+      <mat-icon>{{ isExpanded ? 'keyboard_arrow_left' : 'keyboard_arrow_right' }}</mat-icon>
+    </button>
+    <div class="content">
+      <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
+        <div *ngFor="let item of flowData.data" class="card-container">
+          <mat-card class="card" [ngClass]="{'image-card': isImage(item), 'object-card': !isImage(item)}">
+            <div *ngIf="isImage(item)" class="image-container">
+              <img (click)="showLargeImage(item.image)" [src]="convertBase64ToImage(item.image)" alt="Screenshot" />
+            </div>
+            <div *ngIf="!isImage(item)" class="details-container">
+              <div class="object-content">
+                <img [src]="convertBase64ToImage(item.object)" alt="Screenshot" />
               </div>
             </div>
-          </div>
-      <!-- Navbar content -->
-      
+          </mat-card>
+        </div>
+      </div>
     </div>
-    
   </div>
-  
-  
-  <div class="enlarged-image-container" *ngIf="showImage">
-    <img [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" />  <button mat-icon-button (click)="hideLargeImage()">
-      x
-    </button>
+
+  <div class="image-display" *ngIf="showImage">
+    <img [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" />
   </div>
-  
+</div>
