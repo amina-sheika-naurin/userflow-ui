@@ -12,7 +12,12 @@ export class SingleFlowComponent {
   flowData:any
   isExpanded: boolean = true
   responseData: any;
-
+  shape:any;
+  aspecRatio: string | undefined;
+  boxLeft: number = 100;
+  boxTop: number = 100;
+  boxWidth: number = 50;
+  boxHeight: number = 50;
   constructor(private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -33,6 +38,11 @@ export class SingleFlowComponent {
     return 'data:image/jpeg;base64,' + base64Data;
   }
 
+  convertBase64ToImageStoreShape(base64Data: string, shape:any): string {
+    this.shape = shape
+    return 'data:image/jpeg;base64,' + base64Data;
+  }
+
   isImage(item: any): boolean {
     return !!item.image;
   }
@@ -46,7 +56,6 @@ export class SingleFlowComponent {
     this.apiService.getComponents(id).subscribe({
       next: (resp: any) => {
         this.responseData = resp.components
-        console.log(resp)
       },
       error(err){
       },
@@ -61,6 +70,29 @@ export class SingleFlowComponent {
   toggleNavbar() {
     this.isExpanded = !this.isExpanded;
   }
+
+  highlightStyles: { [key: string]: string } = {};
+
+  highlightArea(position: any) {
+    const height = this.shape[0];
+    const width = this.shape[1];
+
+    this.aspecRatio = `${(height / width) * 100}%`; 
+
+    const { row_min, row_max, column_min, column_max } = position;
+
+    // Calculate box dimensions
+    this.boxLeft = (column_min / width) * 100;
+    this.boxTop = (row_min / height) * 100;
+    this.boxWidth = ((column_max - column_min) / width) * 100;
+    this.boxHeight = ((row_max - row_min) / height) * 100;
+  }
+
+  removeHighlight() {
+    this.highlightStyles = {};
+  }
+
+  
 
 
 }
