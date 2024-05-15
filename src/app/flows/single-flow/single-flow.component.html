@@ -1,4 +1,4 @@
-<div class="container-wrapper" [ngClass]="{'expanded': isExpanded, 'collapsed': !isExpanded}">
+<div class="container-wrapper" *ngIf="flowData" [ngClass]="{'expanded': isExpanded, 'collapsed': !isExpanded}">
   <div class="navbar">
     <button (click)="toggleNavbar()">
       <mat-icon>{{ isExpanded ? 'keyboard_arrow_left' : 'keyboard_arrow_right' }}</mat-icon>

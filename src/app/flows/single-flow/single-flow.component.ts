@@ -78,6 +78,7 @@ export class SingleFlowComponent {
     const width = this.shape[1];
 
     this.aspecRatio = `${(height / width) * 100}%`;
+    console.log(this.aspecRatio)
 
     const { row_min, row_max, column_min, column_max } = position;
 
@@ -85,6 +86,7 @@ export class SingleFlowComponent {
     this.boxTop = (row_min / height) * 100;
     this.boxWidth = ((column_max - column_min) / width) * 100;
     this.boxHeight = ((row_max - row_min) / height) * 100;
+
   }
 
   removeHighlight() {
