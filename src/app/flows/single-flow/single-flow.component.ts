@@ -18,6 +18,7 @@ export class SingleFlowComponent {
   boxTop: number = 0;
   boxWidth: number = 0;
   boxHeight: number = 0;
+  nodes: any=[];
   constructor(private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit(): void {
@@ -70,6 +71,7 @@ export class SingleFlowComponent {
 
   toggleNavbar() {
     this.isExpanded = !this.isExpanded;
+    this.responseData = []
   }
 
 
@@ -94,14 +96,14 @@ export class SingleFlowComponent {
 
   locateNode(divider: any,item:any) {
     let x = 0, y = 0;
+    console.log(item.component_data.position.column_min)
  
-    if (item.position.column_min != 0)
-      x = item.position.column_min / divider;
+    if (item.component_data.position.column_min != 0)
+      x = item.component_data.position.column_min / divider;
  
-    if (item.position.row_min != 0)
-      y = item.position.row_min / divider;
+    if (item.component_data.position.row_min != 0)
+      y = item.component_data.position.row_min / divider;
 
-    let w = item.width;
     // if (this.selDevice.technologyType.toLowerCase() === 'android') {
       let canvas:any = document.getElementById("image");
       let spy:any = document.getElementById("box");
@@ -109,8 +111,8 @@ export class SingleFlowComponent {
       spy.style.border = "#FF0000";
       spy.style.borderStyle = "solid";
       spy.style.position = "absolute";
-      spy.style.height = item.height/ divider + (canvas.offsetHeight - canvas.parentElement.clientHeight)+ 7 + "px";
-      spy.style.width = w / divider + (canvas.offsetWidth - canvas.parentElement.clientWidth) + "px";
+      spy.style.height = item.component_data.height/ divider + (canvas.offsetHeight - canvas.parentElement.clientHeight)+ 7 + "px";
+      spy.style.width = item.component_data.width / divider + (canvas.offsetWidth - canvas.parentElement.clientWidth) + "px";
       spy.style.top = (y - 6)+ "px";
       spy.style.left = (x - 2) + "px";
       spy.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
@@ -122,6 +124,42 @@ export class SingleFlowComponent {
     box.removeAttribute('style')
   }
 
+  findLeafMostNodesAtPoint(px: any, py: any): any {
+    let foundInChild: any = false, x: any, y: any, w: any, h: any;
+    for (let child of this.responseData) {
+      if (child.position) {
+        x = parseInt(child.position.column_min);
+        y = parseInt(child.position.row_min);
+        w = parseInt(child.position.column_max);
+        h = parseInt(child.position.row_max);
+        if (x <= px && px <= w && y <= py && py <= h) {
+          this.nodes.push(child);
+          foundInChild = true;
+        } else {
+          foundInChild = false;
+        }
+      }
+    }
+    if (foundInChild)
+      return true;
+    else
+      return false;
+  }
+
+  mousemove() {
+    let image:any = document.getElementById("image");
+    image.style.cursor = 'pointer';
+    if(this.nodes.length==0)
+      return;
+    else{
+      let li:any = document.getElementById(this.nodes[0].id)
+      li.style.border = "#FF0000";
+      li.style.borderStyle = "solid";
+      li.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
+    }
+        
+  }
+ 
   
 
 

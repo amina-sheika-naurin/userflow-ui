@@ -18,11 +18,11 @@
 }
 
 .expanded .navbar {
-  width: 370px;
+  width: 345px;
 }
 
 .collapsed .navbar {
-  width: 55px;
+  width: 0px;
 }
 
 .card-container {
@@ -88,16 +88,15 @@
   top: 0;
   right: 0;
   bottom: 0;
-  width: calc(100% - 370px); /* Adjust width based on the expanded navbar */
+  width: calc(100% - 345px);
   display: flex;
-  /* padding: 20px; */
-  background-color: white; /* Ensure the image display area has a background */
+  background-color: white; 
   transition: width 0.3s ease;
   
 }
 
 .collapsed .image-display {
-  width: calc(100% - 55px); /* Adjust width based on the collapsed navbar */
+  width: calc(100% - 55px);
 }
 
 .image-container {
