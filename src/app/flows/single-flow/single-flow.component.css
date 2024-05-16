@@ -22,7 +22,7 @@
 }
 
 .collapsed .navbar {
-  width: 50px;
+  width: 55px;
 }
 
 .card-container {
@@ -97,7 +97,7 @@
 }
 
 .collapsed .image-display {
-  width: calc(100% - 30px); /* Adjust width based on the collapsed navbar */
+  width: calc(100% - 55px); /* Adjust width based on the collapsed navbar */
 }
 
 .image-container {

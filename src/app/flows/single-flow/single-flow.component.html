@@ -23,12 +23,13 @@
 
   <div class="image-display" *ngIf="showImage">
     <div class="image-container">
-      <img [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" [style.aspectRatio]="aspecRatio" />
-      <div class="box" [style.left.%]="boxLeft" [style.top.%]="boxTop" [style.width.%]="boxWidth" [style.height.%]="boxHeight"></div>
+      <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot"  />
+      <div id="box"></div>
+      <!-- <div class="box" [style.left.%]="boxLeft" [style.top.%]="boxTop" [style.width.%]="boxWidth" [style.height.%]="boxHeight"></div> -->
     </div>  
-    <div class="response-container">
+    <div class="response-container" (mouseleave)="removeHighlight()">
       <ul>
-        <li *ngFor="let item of responseData" (mouseenter)="highlightArea(item.position)" (mouseleave)="removeHighlight()">{{ item.class}}</li>
+        <li *ngFor="let item of responseData" (mouseenter)="highlightArea(item)" >{{ item.class}}</li>
       </ul>
     </div>
   </div>
