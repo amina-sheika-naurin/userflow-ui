@@ -18,7 +18,6 @@ import { provideAnimationsAsync } from '@angular/platform-browser/animations/asy
     HttpClientModule,
     MatCardModule,
     FlowsModule
-
   ],
   providers: [
     provideAnimationsAsync()

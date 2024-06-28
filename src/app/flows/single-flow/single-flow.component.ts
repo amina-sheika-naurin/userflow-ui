@@ -8,7 +8,7 @@ import { ApiService } from '../api.service';
   styleUrl: './single-flow.component.css'
 })
 export class SingleFlowComponent {
-
+  showLoader:boolean= false
   flowData:any
   isExpanded: boolean = true
   responseData: any;
@@ -22,16 +22,19 @@ export class SingleFlowComponent {
   constructor(private route: ActivatedRoute, private apiService: ApiService) { }
 
   ngOnInit(): void {
+    this.showLoader = true
     const flowId = this.route.snapshot.paramMap.get('id');
     if (flowId) {
       this.apiService.getFlow(flowId).subscribe
       ({
         next: (resp: any) => {
-          this.flowData = resp
+          this.flowData = resp.data
+          this.showLoader = false
         }, 
         error(err) {
+          console.log(err); 
         },      
-      })
+      } )
     }
   }
 
@@ -45,7 +48,7 @@ export class SingleFlowComponent {
   }
 
   isImage(item: any): boolean {
-    return !!item.image;
+    return !!item.base;
   }
 
   showImage: boolean = false;
@@ -55,9 +58,11 @@ export class SingleFlowComponent {
     this.showImage = true;
     this.isExpanded = false;
     this.enlargedImageUrl = imageUrl;
+    this.showLoader = true
     this.apiService.getComponents(id).subscribe({
       next: (resp: any) => {
         this.responseData = resp.components
+        this.showLoader = false
       },
       error(err){
       },
@@ -96,7 +101,6 @@ export class SingleFlowComponent {
 
   locateNode(divider: any,item:any) {
     let x = 0, y = 0;
-    console.log(item.component_data.position.column_min)
  
     if (item.component_data.position.column_min != 0)
       x = item.component_data.position.column_min / divider;
@@ -111,7 +115,7 @@ export class SingleFlowComponent {
       spy.style.border = "#FF0000";
       spy.style.borderStyle = "solid";
       spy.style.position = "absolute";
-      spy.style.height = item.component_data.height/ divider + (canvas.offsetHeight - canvas.parentElement.clientHeight)+ 7 + "px";
+      spy.style.height = item.component_data.height/ divider + Math.abs((canvas.offsetHeight - canvas.parentElement.clientHeight)/2)+ 7 + "px";
       spy.style.width = item.component_data.width / divider + (canvas.offsetWidth - canvas.parentElement.clientWidth) + "px";
       spy.style.top = (y - 6)+ "px";
       spy.style.left = (x - 2) + "px";
@@ -160,7 +164,9 @@ export class SingleFlowComponent {
         
   }
  
-  
+  toggleAccordion(item: any) {
+    item.isExpanded = !item.isExpanded;
+  }
 
 
 }

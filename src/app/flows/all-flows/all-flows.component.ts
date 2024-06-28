@@ -14,6 +14,7 @@ import { Router } from '@angular/router';
 export class AllFlowsComponent {
 
   flows: any[] = [];
+  showLoader:boolean=false
 
   constructor(
     private apiService: ApiService,
@@ -21,18 +22,22 @@ export class AllFlowsComponent {
   ) { }
 
   ngOnInit(): void {
+    this.showLoader=true
     this.apiService.getAllFlows().subscribe({
       next:(response: any) => {
+       
         this.flows = response.map((flow: { createdOn: { $date: string | number | Date; }; }) => ({
           ...flow,
-          createdOn: new Date(flow.createdOn.$date)
-          
-        }));
+          createdOn: new Date(flow.createdOn.$date)  
+        }
+      ));
+      this.showLoader = false; 
       },
       error(err){
         console.log(err)
       },
-    })
+    }
+  )
   }
 
   onCardClick(flow: any): void {

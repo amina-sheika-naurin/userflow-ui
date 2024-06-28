@@ -6,7 +6,7 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://localhost:5000/api/';
+  private baseUrl = 'http://159.65.152.145:5500/api/';
 
   constructor(private http: HttpClient) { }
 
@@ -19,7 +19,7 @@ export class ApiService {
   }
 
   getComponents(id: string):  Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'getcomponents?baseimage_id=' + id);
+    return this.http.get<any>(this.baseUrl + 'get-components?baseimage_id=' + id);
   }
 
 }

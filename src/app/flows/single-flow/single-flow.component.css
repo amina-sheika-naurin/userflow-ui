@@ -125,6 +125,45 @@
 }
 
 
+.tag-container {
+  padding-left: 10px; /* Adjust padding as needed */
+}
 
+.accordion {
+  border: 1px solid #ddd;
+  border-radius: 4px;
+  margin-bottom: 10px;
+  overflow: hidden;
+  transition: all 0.3s ease-in-out;
+}
+
+.accordion.hidden {
+  max-height: 0;
+  padding: 0;
+}
+
+.accordion-header {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  padding: 10px 15px;
+  cursor: pointer;
+  border-bottom: 1px solid #ddd;
+}
+
+.accordion-content {
+  padding: 15px;
+  transition: all 0.3s ease-in-out;
+}
+
+.material-icons {
+  font-size: 18px;
+  cursor: pointer;
+  transition: transform 0.3s ease-in-out;
+}
+
+.material-icons:hover {
+  transform: translateY(-1px);
+}
 
 

@@ -1,3 +1,5 @@
+<app-loader [showLoader]="showLoader">
+</app-loader>
 <div class="container-wrapper" *ngIf="flowData" [ngClass]="{'expanded': isExpanded, 'collapsed': !isExpanded}">
   <button (click)="toggleNavbar()">
     <mat-icon>{{ isExpanded ? 'keyboard_arrow_left' : 'keyboard_arrow_right' }}</mat-icon>
@@ -6,14 +8,14 @@
     
     <div class="content">
       <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
-        <div *ngFor="let item of flowData.data" class="card-container">
-          <mat-card class="card" [ngClass]="{'image-card': isImage(item), 'object-card': !isImage(item)}">
-            <div *ngIf="isImage(item)" class="image-container">
-              <img (click)="showLargeImage(item.image, item._id)" [src]="convertBase64ToImageStoreShape(item.image,item.shape)" alt="Screenshot" />
+        <div *ngFor="let data of flowData" class="card-container">
+          <mat-card class="card" [ngClass]="{'image-card': isImage(data), 'object-card': !isImage(data)}">
+            <div *ngIf="isImage(data)" class="image-container">
+              <img (click)="showLargeImage(data.base, data._id)" [src]="convertBase64ToImageStoreShape(data.base,data.shape)" alt="Screenshot" />
             </div>
-            <div *ngIf="!isImage(item)" class="details-container">
+            <div *ngIf="!isImage(data)" class="details-container">
               <div class="object-content">
-                <img [src]="convertBase64ToImage(item.object)" alt="Screenshot" />
+                <img [src]="convertBase64ToImage(data.object)" alt="Screenshot" />
               </div>
             </div>
           </mat-card>
@@ -49,24 +51,48 @@
         </ng-container>
       </ul>
     </div> -->
-    <div class="response-container"  (mouseleave)="removeHighlight()">
-      <ul>
-        <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: responseData }"></ng-container>
-      </ul>
+    <div class="response-container" (mouseleave)="removeHighlight()">
+      <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: responseData }"></ng-container>
     </div>
     
     <ng-template #recursiveList let-items>
       <ng-container *ngFor="let item of items">
-        <li (mouseenter)="highlightArea(item)" id="{{ item.id }}">{{ item.component_data.class }}</li>
+        <div class="tag-container" (mouseenter)="highlightArea(item)" (click)="toggleAccordion(item)" id="{{ item.id }}">
+          <ng-container *ngIf="item.component_data.attributes">
+            <ng-container *ngFor="let attribute of item.component_data.attributes">
+              <ng-container *ngIf="attribute.name === 'TagName'">
+                <div>&lt;{{ attribute.value }}&gt;</div>
+              </ng-container>
+            </ng-container>
+          </ng-container>
+          <div class="accordion" *ngIf="item.isExpanded">
+            <div class="accordion-header">
+              <span>Attributes</span>
+              <i class="material-icons" (click)="toggleAccordion(item)">
+                {{ item.isExpanded ? 'expand_less' : 'expand_more' }}
+              </i>
+            </div>
+            <div class="accordion-content">
+              <ng-container *ngFor="let attribute of item.component_data.attributes">
+                  <div>{{ attribute.name|titlecase }}: {{ attribute.value }}</div>
+              </ng-container>
+              <!-- <ul>
+                <li *ngFor="let attribute of item.component_data.attributes">
+                  <span>{{ attribute.name }}: {{ attribute.value }}</span>
+                </li>
+              </ul> -->
+            </div>
+          </div>
+        </div>
         <ng-container *ngIf="item.children && item.children.length">
-          <li>
-            <ul>
-              <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children }"></ng-container>
-            </ul>
-          </li>
+          <ul>
+            <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children }"></ng-container>
+          </ul>
         </ng-container>
       </ng-container>
     </ng-template>
+    
+    
     
     
   </div>
