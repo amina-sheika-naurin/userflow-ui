@@ -26,8 +26,8 @@
 
   <div class="image-display" *ngIf="showImage">
     <div class="image-container">
-      <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot"  (mousemove)="mousemove()" />
-      <div id="box"></div>
+      <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" (mousemove)="mousemove($event)" />
+      <div id="box"  (mousedown)="mousedownImg()" ></div>
       <!-- <div class="box" [style.left.%]="boxLeft" [style.top.%]="boxTop" [style.width.%]="boxWidth" [style.height.%]="boxHeight"></div> -->
     </div>  
     <!-- <div class="response-container" (mouseleave)="removeHighlight()">
@@ -57,7 +57,7 @@
     
     <ng-template #recursiveList let-items>
       <ng-container *ngFor="let item of items">
-        <div class="tag-container" (mouseenter)="highlightArea(item)" (click)="toggleAccordion(item)" id="{{ item.id }}">
+        <div class="tag-container" (mouseenter)="highlightArea(item)" (click)="toggleAccordion(item)" id="{{ item.component_data.id }}">
           <ng-container *ngIf="item.component_data.attributes">
             <ng-container *ngFor="let attribute of item.component_data.attributes">
               <ng-container *ngIf="attribute.name === 'TagName'">

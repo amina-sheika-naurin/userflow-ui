@@ -115,8 +115,8 @@ export class SingleFlowComponent {
       spy.style.border = "#FF0000";
       spy.style.borderStyle = "solid";
       spy.style.position = "absolute";
-      spy.style.height = item.component_data.height/ divider + Math.abs((canvas.offsetHeight - canvas.parentElement.clientHeight)/2)+ 7 + "px";
-      spy.style.width = item.component_data.width / divider + (canvas.offsetWidth - canvas.parentElement.clientWidth) + "px";
+      spy.style.height = item.component_data.height/ divider + 7 + "px";
+      spy.style.width = item.component_data.width / divider  + "px";
       spy.style.top = (y - 6)+ "px";
       spy.style.left = (x - 2) + "px";
       spy.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
@@ -128,14 +128,38 @@ export class SingleFlowComponent {
     box.removeAttribute('style')
   }
 
+
+  findLeafMostNodesAtPoint2(px: any, py: any, node:any): any {
+    let foundInChild: any = false, x: any, y: any, w: any, h: any;
+    for (let child of node.children) {
+      foundInChild = foundInChild | this.findLeafMostNodesAtPoint2(px, py, child);
+    }
+    if (foundInChild)
+      return true;
+    if (node.component_data) {
+      x = parseInt(node.component_data.position.column_min);
+        y = parseInt(node.component_data.position.row_min);
+        w = parseInt(node.component_data.position.column_max);
+        h = parseInt(node.component_data.position.row_max);
+      if (x <= px && px <= w && y <= py && py <= h) {
+        this.nodes.push(node);
+        return true;
+      } else {
+        return false;
+      }
+    }
+    else
+      return false;
+  }
+
   findLeafMostNodesAtPoint(px: any, py: any): any {
     let foundInChild: any = false, x: any, y: any, w: any, h: any;
     for (let child of this.responseData) {
-      if (child.position) {
-        x = parseInt(child.position.column_min);
-        y = parseInt(child.position.row_min);
-        w = parseInt(child.position.column_max);
-        h = parseInt(child.position.row_max);
+      if (child.component_data.position) {
+        x = parseInt(child.component_data.position.column_min);
+        y = parseInt(child.component_data.position.row_min);
+        w = parseInt(child.component_data.position.column_max);
+        h = parseInt(child.component_data.position.row_max);
         if (x <= px && px <= w && y <= py && py <= h) {
           this.nodes.push(child);
           foundInChild = true;
@@ -150,18 +174,53 @@ export class SingleFlowComponent {
       return false;
   }
 
-  mousemove() {
+
+
+  mousemove(event:any) {
+    this.nodes = [];
+    const height = this.shape[0];
     let image:any = document.getElementById("image");
-    image.style.cursor = 'pointer';
+    let aratio = parseInt(height)/parseInt(image?.offsetHeight)
+    for(let element of this.responseData)
+      if(this.findLeafMostNodesAtPoint2((event.offsetX * aratio), (event.offsetY * aratio),element))
+        break
+      else 
+      continue
     if(this.nodes.length==0)
       return;
-    else{
-      let li:any = document.getElementById(this.nodes[0].id)
-      li.style.border = "#FF0000";
-      li.style.borderStyle = "solid";
-      li.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
-    }
+    this.locateNode2(aratio)
+    // else{
+    //   let li:any = document.getElementById(this.nodes[0].id)
+    //   li.style.border = "#FF0000";
+    //   li.style.borderStyle = "solid";
+    //   li.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
+    // }
         
+  }
+  selectedNode:any
+  myElement:any
+  locateNode2(aratio:any){
+    this.selectedNode = {};
+    let x = 0, y = 0;
+
+    if (Object.keys(this.selectedNode).length == 0)
+      this.selectedNode = this.nodes[0];
+
+    for (let i = 0; i < this.nodes.length; i++) {
+
+      if ((this.selectedNode.height * this.selectedNode.component_data.width) > (this.nodes[i].component_data.height * this.nodes[i].component_data.width)) {
+        this.selectedNode = this.nodes[i];
+      }
+  }
+  this.locateNode(aratio,this.selectedNode);
+}
+
+  mousedownImg(){
+    if(this.myElement)
+      this.myElement.click();
+    this.myElement = document.getElementById(this.selectedNode?.component_data?.id);
+    this.myElement.click();
+    this.myElement.scrollIntoView();
   }
  
   toggleAccordion(item: any) {
