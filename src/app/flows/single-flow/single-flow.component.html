@@ -8,17 +8,20 @@
     
     <div class="content">
       <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
-        <div *ngFor="let data of flowData" class="card-container">
-          <mat-card class="card" [ngClass]="{'image-card': isImage(data), 'object-card': !isImage(data)}">
-            <div *ngIf="isImage(data)" class="image-container">
-              <img (click)="showLargeImage(data.base, data._id)" [src]="convertBase64ToImageStoreShape(data.base,data.shape)" alt="Screenshot" />
-            </div>
-            <div *ngIf="!isImage(data)" class="details-container">
-              <div class="object-content">
-                <img [src]="convertBase64ToImage(data.object)" alt="Screenshot" />
+        <div *ngIf="flowData?.length > 0">
+          <div *ngFor="let data of flowData" class="card-container">
+            <li class="d-flex column-gap-4" *ngFor="let item of flowData; let i = index">
+            <mat-card class="card" [ngClass]="{'image-card': !!data.base, 'object-card': !data.base && !data.hbase}">
+              <div *ngIf="!!data.base" class="image-container">
+                <img (click)="showLargeImage(data.base, data._id)" [src]="convertBase64ToImageStoreShape(data.base, data.shape)" alt="Screenshot" />
               </div>
-            </div>
-          </mat-card>
+              <div *ngIf="data.object && !data.base && !data.hbase" class="details-container">
+                <div class="object-content">
+                  <img [src]="convertBase64ToImage(data.object)" alt="Screenshot" />
+                </div>
+              </div>
+            </mat-card>
+          </div>          
         </div>
       </div>
     </div>
