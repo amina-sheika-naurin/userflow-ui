@@ -28,7 +28,8 @@ export class SingleFlowComponent {
       this.apiService.getFlow(flowId).subscribe
       ({
         next: (resp: any) => {
-          this.flowData = resp.data
+          this.flowData = resp.bases
+          console.log( this.flowData)
           this.showLoader = false
         }, 
         error(err) {
@@ -42,24 +43,24 @@ export class SingleFlowComponent {
     return 'data:image/jpeg;base64,' + base64Data;
   }
 
-  convertBase64ToImageStoreShape(base64Data: string, shape:any): string {
-    this.shape = shape
-    return 'data:image/jpeg;base64,' + base64Data;
-  }
+  // convertBase64ToImageStoreShape(base64Data: string): string {
+  //   return 'data:image/jpeg;base64,' + base64Data;
+  // }
 
-  isImage(item: any): boolean {
-    return !!item.base;
-  }
+  // isImage(item: any): boolean {
+  //   return !!item.base;
+  // }
 
   showImage: boolean = false;
   enlargedImageUrl: string = '';
 
-  showLargeImage(imageUrl: string, id: string) {
+  showLargeImage(baseid:any,imageUrl: any, html: string) {
     this.showImage = true;
     this.isExpanded = false;
     this.enlargedImageUrl = imageUrl;
+    this.responseData = html
     this.showLoader = true
-    this.apiService.getComponents(id).subscribe({
+    this.apiService.getComponents(baseid).subscribe({
       next: (resp: any) => {
         this.responseData = resp.components
         this.showLoader = false

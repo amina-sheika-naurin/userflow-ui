@@ -25,12 +25,14 @@ export class AllFlowsComponent {
     this.showLoader=true
     this.apiService.getAllFlows().subscribe({
       next:(response: any) => {
-       
-        this.flows = response.map((flow: { createdOn: { $date: string | number | Date; }; }) => ({
-          ...flow,
-          createdOn: new Date(flow.createdOn.$date)  
-        }
-      ));
+        response = response.simulations
+        this.flows = response
+    //     this.flows = response.map((flow: { createdOn: { $date: string | number | Date; }; }) => ({
+    //       ...flow,
+    //       createdOn: new Date(flow.createdOn.$date)  
+    //     }
+    //   )
+    // );
       this.showLoader = false; 
       },
       error(err){

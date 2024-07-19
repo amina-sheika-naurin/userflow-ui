@@ -6,20 +6,20 @@ import { Observable } from 'rxjs';
   providedIn: 'root'
 })
 export class ApiService {
-  private baseUrl = 'http://159.65.152.145:5500/api/';
+  private baseUrl = 'http://159.65.152.145:5700/api/';
 
   constructor(private http: HttpClient) { }
 
   getAllFlows(): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'getallflows');
+    return this.http.get<any>(this.baseUrl + 'get-all-simulations');
   }
 
   getFlow(flowId: string): Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'getflow?flow_id=' + flowId);
+    return this.http.get<any>(this.baseUrl + 'get-simulation?simulationid=' + flowId);
   }
 
   getComponents(id: string):  Observable<any> {
-    return this.http.get<any>(this.baseUrl + 'get-components?baseimage_id=' + id);
+    return this.http.get<any>(this.baseUrl + 'get-userInteracted-objects?baseid=' + id);
   }
 
 }

@@ -10,15 +10,10 @@
       <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
         <div *ngIf="flowData?.length > 0">
           <div *ngFor="let data of flowData" class="card-container">
-            <li class="d-flex column-gap-4" *ngFor="let item of flowData; let i = index">
-            <mat-card class="card" [ngClass]="{'image-card': !!data.base, 'object-card': !data.base && !data.hbase}">
-              <div *ngIf="!!data.base" class="image-container">
-                <img (click)="showLargeImage(data.base, data._id)" [src]="convertBase64ToImageStoreShape(data.base, data.shape)" alt="Screenshot" />
-              </div>
-              <div *ngIf="data.object && !data.base && !data.hbase" class="details-container">
-                <div class="object-content">
-                  <img [src]="convertBase64ToImage(data.object)" alt="Screenshot" />
-                </div>
+            <!-- <li class="d-flex column-gap-4" *ngFor="let item of flowData; let i = index"> -->
+            <mat-card class="card image-card" >
+              <div *ngIf="data.base" class="image-container">
+                <img (click)="showLargeImage(data._id,data.base, data.html )" [src]="convertBase64ToImage(data.base)" alt="Screenshot" />
               </div>
             </mat-card>
           </div>          
