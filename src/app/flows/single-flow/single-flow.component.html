@@ -10,7 +10,6 @@
       <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
         <div *ngIf="flowData?.length > 0">
           <div *ngFor="let data of flowData" class="card-container">
-            <!-- <li class="d-flex column-gap-4" *ngFor="let item of flowData; let i = index"> -->
             <mat-card class="card image-card" >
               <div *ngIf="data.base" class="image-container">
                 <img (click)="showLargeImage(data._id,data.base, data.html )" [src]="convertBase64ToImage(data.base)" alt="Screenshot" />
@@ -21,13 +20,85 @@
       </div>
     </div>
   </div>
+  <div>
 
-  <div class="image-display" *ngIf="showImage">
-    <div class="image-container">
+  <div class="image-display" *ngIf="showImage" >
+    <div class="image-container" style="margin: 10px;  ">
       <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" (mousemove)="mousemove($event)" />
-      <div id="box"  (mousedown)="mousedownImg()" ></div>
-      <!-- <div class="box" [style.left.%]="boxLeft" [style.top.%]="boxTop" [style.width.%]="boxWidth" [style.height.%]="boxHeight"></div> -->
-    </div>  
+      <div id="box"  (mousedown)="mousedownImg()"  style="pointer-events: none;"></div>
+    </div> 
+    <div class="response-container" *ngIf="doc" >
+      <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: [doc] }"></ng-container> 
+      <ng-template #recursiveList let-items>
+        <ng-container *ngFor="let item of items">
+          <div class="tree-item">
+            <div class="tag" (click)="toggleExpand(item)" (click)="highlightArea(item)">
+              &lt;{{ item.nodeName.toLowerCase() }}
+              <span *ngFor="let attr of item.attributes">
+                {{ attr.name }}="{{ attr.value }}"
+              </span>
+              &gt;
+            </div>
+            <div class="children" *ngIf="item.expanded">
+              <ul>
+                <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: item.children }"></ng-container>
+              </ul>
+            </div>
+            <div class="content" *ngIf="item.nodeType === 3">
+              {{ item.textContent }}
+            </div>
+          </div>
+        </ng-container>
+      </ng-template>
+    </div>
+    
+
+  </div>    
+</div>
+<!-- </div> -->
+
+<!-- <div class="response-container" *ngIf="doc" >
+      <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: [doc] }"></ng-container>  
+      <ng-template #recursiveList let-items>
+        <ng-container *ngFor="let item of items">
+          <div class="tree-item">
+            <div class="tag" >&lt;{{ item.tagName.toLowerCase() }}&gt;</div>
+            <ng-container *ngIf="item.children.length > 0">
+              <ul class="children">
+                <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: item.children }"></ng-container>
+              </ul>
+            </ng-container>
+          </div>
+        </ng-container>
+      </ng-template>
+    </div> -->
+
+
+
+<!-- ******************************* -->
+
+
+
+
+
+    <!-- <div class="response-container" *ngIf="doc">
+      <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: [doc.documentElement] }"></ng-container>
+    </div>
+    
+    <ng-template #recursiveList let-items>
+      <ng-container *ngFor="let item of items">
+        <div >
+          <div>&lt;{{ item.tagName.toLowerCase() }}&gt; </div>
+          <ng-container *ngIf="item.children.length > 0">
+            <ul>
+              <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: item.children }"></ng-container>
+            </ul>
+          </ng-container>
+        </div>
+      </ng-container>
+    </ng-template> -->
+    
+     
     <!-- <div class="response-container" (mouseleave)="removeHighlight()">
       <ul>
         <li *ngFor="let item of responseData" (mouseenter)="highlightArea(item)" id="{{item.id}}">{{ item}}</li>
@@ -49,7 +120,7 @@
         </ng-container>
       </ul>
     </div> -->
-    <div class="response-container" (mouseleave)="removeHighlight()">
+    <!-- <div class="response-container" (mouseleave)="removeHighlight()">
       <ng-container *ngTemplateOutlet="recursiveList; context:{ $implicit: responseData }"></ng-container>
     </div>
     
@@ -73,13 +144,13 @@
             <div class="accordion-content">
               <ng-container *ngFor="let attribute of item.component_data.attributes">
                   <div>{{ attribute.name|titlecase }}: {{ attribute.value }}</div>
-              </ng-container>
+              </ng-container> -->
               <!-- <ul>
                 <li *ngFor="let attribute of item.component_data.attributes">
                   <span>{{ attribute.name }}: {{ attribute.value }}</span>
                 </li>
               </ul> -->
-            </div>
+            <!-- </div>
           </div>
         </div>
         <ng-container *ngIf="item.children && item.children.length">
@@ -88,10 +159,9 @@
           </ul>
         </ng-container>
       </ng-container>
-    </ng-template>
+    </ng-template> -->
     
     
     
     
-  </div>
-</div>
+

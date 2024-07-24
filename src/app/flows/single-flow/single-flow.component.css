@@ -1,24 +1,27 @@
 .container-wrapper {
   display: flex;
-  height: 100vh; /* Ensure the container takes up the full viewport height */
+  height: 100vh; 
   flex-direction: row;
+  background-color: #f0f0f0;
 }
 
 .navbar {
   flex: 0 0 auto;
   background-color: #f0f0f0;
   transition: width 0.3s ease;
-  overflow-y: auto; /* Make the navbar scrollable */
-  height: 100vh; /* Ensure the navbar takes up the full viewport height */
+  overflow-y: auto; 
+  height: 100vh; 
 }
 
 .content {
-  flex: 1;
-  /* padding: 20px; */
+  display: flex;
+  flex-direction: column;
+  height: 100%; 
 }
 
+
 .expanded .navbar {
-  width: 345px;
+  width: 320px;
 }
 
 .collapsed .navbar {
@@ -27,69 +30,41 @@
 
 .card-container {
   flex: 0 0 auto;
-  margin-right: 16px;
+  margin: 10px;
   padding-bottom: 10px;
 }
 
 .card {
-  width: 300px; /* Adjust width as needed */
+  width: 300px; 
   border-radius: 8px;
   box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
   overflow: hidden;
-  background-color: #fff; /* Set a light background for better readability */
+  background-color: #fff;
 }
 
 .image-card {
-  position: relative; /* Enable layering for hover effects (optional) */
+  position: relative; 
 }
 
 .image-card img {
   width: 100%;
   height: auto;
-  transition: transform 0.2s ease-in-out; /* Add a smooth hover effect (optional) */
+  transition: transform 0.2s ease-in-out; 
 }
 
 .image-card:hover img {
-  transform: scale(1.1); /* Increase image size slightly on hover (optional) */
+  transform: scale(1.1); 
 }
 
-.object-card {
-  padding: 16px;
-}
 
-.object-content {
-  display: flex; /* Allow horizontal layout */
-  flex-direction: row; /* Align elements horizontally */
-  align-items: center; /* Vertically center elements */
-  margin-bottom: 16px;
-}
-
-.object-content h3 {
-  font-size: 16px;
-  margin: 0;
-  font-weight: bold;
-  color: #333;
-}
-
-.object-content p {
-  font-size: 14px;
-  margin: 0 8px; /* Add spacing between title and description */
-  color: #666;
-}
-
-.details-container img {
-  width: 100%; /* Ensures the image fills the container horizontally */
-  height: auto; /* Maintains aspect ratio while fitting width */
-  object-fit: contain; /* Scales the image to fit within the container while preserving aspect ratio */
-}
 
 .image-display {
   position: fixed;
   top: 0;
   right: 0;
   bottom: 0;
-  width: calc(100% - 345px);
-  display: flex;
+  width: calc(100% - 370px);
+  /* display: row; */
   background-color: white; 
   transition: width 0.3s ease;
   
@@ -104,29 +79,33 @@
 }
 
 .image-container img {
-  display: block;
+  /* display: a; */
+  background-color: #f0f0f0;
   max-width: 100%;
-  max-height: 100%;
+  max-height: 30%;
   object-fit: contain;
 }
 
-
-
 .response-container {
-  width: 200px; /* Adjust width as needed */
+  /* background-color: #f0f0f0; */
   overflow-y: auto;
-  /* padding: 10px; */
-  background-color: #f9f9f9;
+  font-family: Arial, sans-serif;
+  overflow-y: auto; 
+  max-height: 60%;
+  /* height: 100% ;  */
+  overflow-wrap: break-word; /* or overflow-wrap: anywhere; */
+  word-wrap: break-word; /* for older browsers */
+  width: 100%;
 }
+
 
 .box {
   position: absolute;
-  border: 2px solid red; /* Change as needed */
+  border: 2px solid red; 
 }
 
-
 .tag-container {
-  padding-left: 10px; /* Adjust padding as needed */
+  padding-left: 10px;
 }
 
 .accordion {
@@ -164,6 +143,64 @@
 
 .material-icons:hover {
   transform: translateY(-1px);
+}
+
+.tree-item {
+  margin-left: 5px;
+  overflow-wrap: break-word; /* or overflow-wrap: anywhere; */
+  word-wrap: break-word; /* for older browsers */
+  width: 100%;
+
+}
+
+.tag {
+  font-weight: bold;
+  color: #007bff; 
+  margin-left: -2px;
+}
+
+.children {
+  list-style-type: none;
+  /* padding-left: 20px; */
+}
+
+.children .tree-item {
+  margin-left: 0;
+}
+
+
+
+
+
+
+.object-card {
+  padding: 16px;
+}
+
+.object-content {
+  display: flex; 
+  flex-direction: row; 
+  align-items: center; 
+  margin-bottom: 16px;
+}
+
+.object-content h3 {
+  font-size: 16px;
+  margin: 0;
+  font-weight: bold;
+  color: #333;
+}
+
+.object-content p {
+  font-size: 14px;
+  margin: 0 8px; 
+  color: #666;
+}
+
+.details-container img {
+  width: 100%; 
+  height: auto; 
+  object-fit: contain; 
 }
 
 
