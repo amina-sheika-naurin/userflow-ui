@@ -9,6 +9,7 @@ import { ApiService } from '../api.service'
 })
 export class SingleFlowComponent {
   showLoader:boolean= false
+  interactedobjects:any
   flowData:any
   isExpanded: boolean = true
   responseData: any 
@@ -62,17 +63,68 @@ export class SingleFlowComponent {
     this.showImage = true 
     // this.isExpanded = false 
     this.enlargedImageUrl = imageUrl 
-    // this.responseData = html
     this.maketree(html)
     this.showLoader = true
     this.apiService.getComponents(baseid).subscribe({
       next: (resp: any) => {
+        this.interactedobjects = resp.objects
+        this.higlightInteractedObjects(this.interactedobjects)
         // this.responseData = resp.components
         this.showLoader = false
       },
       error(err){
       },
     })
+  }
+  higlightInteractedObjects(interactedobjects:any)
+  {
+    const imageheight = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height']
+    let image:any = document.getElementById("image");
+    let aratio = parseInt(imageheight)/parseInt(image?.offsetHeight)
+    // this.locateNode(aratio,item)
+  
+    let bounds = interactedobjects[0].objectbounds
+    let canvas:any = document.getElementById("image");
+    let height= JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height']
+    let width= JSON.parse(this.doc.parentNode.attributes['bounds'].value)['width']
+    let aratioh = parseInt(height)/parseInt(canvas?.offsetHeight)
+    let aratiow = parseInt(width)/parseInt(canvas?.offsetWidth)
+    let x = 0, y = 0;
+ 
+    if (bounds.left != 0)
+      x = bounds.left / aratio;
+ 
+    if (bounds.top != 0)
+      y = bounds.top / aratio;
+
+    // if (this.selDevice.technologyType.toLowerCase() === 'android') {
+    
+      let spy:any = document.getElementById("interactedbox");
+      // spy.style.border = "black";
+      spy.style.border = "#008000";
+      spy.style.borderStyle = "solid";
+      spy.style.position = "absolute";
+      spy.style.height = bounds.height/ aratioh + 7 + "px";
+      spy.style.width = bounds.width / aratiow  + "px";
+      spy.style.top = (y - 6)+ "px";
+      spy.style.left = (x - 2) + "px";
+      // spy.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
+
+  }
+
+  redirect(){
+    let redirectionbaseid = this.interactedobjects[0].redirectedbaseid
+    let matchingObject = this.flowData.find((obj: { _id: any }) => obj._id === redirectionbaseid);
+
+    if (matchingObject) {
+        // Do something with matchingObject, for example:
+        console.log(matchingObject);
+        // You can perform further actions based on the matching object
+    } else {
+        console.log("No matching object found in flowData");
+    }
+    this.showLargeImage(matchingObject._id,matchingObject.base, matchingObject.html)
+    this.convertBase64ToImage(matchingObject.base)
   }
 
   filterElements(node:any, allowedTags:any) {
@@ -89,45 +141,21 @@ export class SingleFlowComponent {
 
 
   maketree(html: string) {
-     let allowedTags = [
-      'body','div', 'span', 'section', 'article', 'header', 'footer', 'nav', 'aside', 'main',
-      'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'hr', 'a',
-      'img', 'audio', 'video',
-      'button', 'form', 'input', 'label', 'select', 'textarea',
-      'figure', 'figcaption', 'time', 'address', 'details', 'summary',
-      'table', 'tr', 'td', 'th',
-      'ul', 'ol', 'li', 'dialog', 'center'
-    ];
+    //  let allowedTags = [
+    //   'body','div', 'span', 'section', 'article', 'header', 'footer', 'nav', 'aside', 'main',
+    //   'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'hr', 'a',
+    //   'img', 'audio', 'video',
+    //   'button', 'form', 'input', 'label', 'select', 'textarea',
+    //   'figure', 'figcaption', 'time', 'address', 'details', 'summary',
+    //   'table', 'tr', 'td', 'th',
+    //   'ul', 'ol', 'li', 'dialog', 'center'
+    // ];
     const parser = new DOMParser()
     const parsedDoc = parser.parseFromString(html, 'text/html')
     this.doc = parsedDoc.body
     // this.doc =  this.filterElements(parsedDoc.body, allowedTags) 
   }
 
-  // escapeHtml(html: string): string {
-  //   return html.replace(/</g, '&lt;').replace(/>/g, '&gt;');
-  // }
-  
-  
-  // maketree(html : any){
-    
-  //   var parser = new DOMParser() 
-  //   this.doc =  parser.parseFromString(html, "text/html")
-    
-  //   this.doc  = this.doc.body
-  // }
-    // var allowedTags = [
-    //   'body','div', 'span', 'section', 'article', 'header', 'footer', 'nav', 'aside', 'main',
-    //   'h1', 'h2', 'h3', 'h4', 'h5', 'h6', 'p', 'br', 'hr',
-    //   'img', 'audio', 'video',
-    //   'button', 'form', 'input', 'label', 'select', 'textarea',
-    //   'figure', 'figcaption', 'time', 'address', 'details', 'summary',
-    //   'table', 'tr', 'td', 'th',
-    //   'ul', 'ol', 'li'
-    // ];
-  
-    // this.filterElements(this.doc.body, allowedTags)
-  // }
 
   toggleExpand(item: any): void {
     item.expanded = !item.expanded;

@@ -12,7 +12,7 @@
           <div *ngFor="let data of flowData" class="card-container">
             <mat-card class="card image-card" >
               <div *ngIf="data.base" class="image-container">
-                <img (click)="showLargeImage(data._id,data.base, data.html )" [src]="convertBase64ToImage(data.base)" alt="Screenshot" />
+                <img (click)="showLargeImage(data._id,data.base, data.html)" [src]="convertBase64ToImage(data.base)" alt="Screenshot" />
               </div>
             </mat-card>
           </div>          
@@ -22,12 +22,13 @@
   </div>
   <div>
 
-  <div class="image-display" *ngIf="showImage" >
+  <div class="image-display" *ngIf="showImage" (mouseleave)="removeHighlight()">
     <div class="image-container" style="margin: 10px;  ">
       <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" (mousemove)="mousemove($event)" />
-      <div id="box"  (mousedown)="mousedownImg()"  style="pointer-events: none;"></div>
+      <div id="box"  style="pointer-events: none;"></div>
+      <div id="interactedbox"   (mouseenter)="removeHighlight()" (click)="redirect()"></div>
     </div> 
-    <div class="response-container" *ngIf="doc" >
+    <div class="response-container" *ngIf="doc"  >
       <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: [doc] }"></ng-container> 
       <ng-template #recursiveList let-items>
         <ng-container *ngFor="let item of items">
@@ -55,7 +56,7 @@
 
   </div>    
 </div>
-<!-- </div> -->
+</div>
 
 <!-- <div class="response-container" *ngIf="doc" >
       <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: [doc] }"></ng-container>  
