@@ -6,8 +6,11 @@
       <div class="col-lg-4 col-md-6 col-sm-12" *ngFor="let flow of flows" (click)="onCardClick(flow._id)">
         <div class="card h-100">
           <div class="card-body">
-            <h5 class="card-title">{{ flow.flowname }}</h5>
-            <p class="card-text">Created On: {{ flow.createdOn | date: 'medium' }}</p>
+            <div style="display: flex; justify-content: space-between;">
+              <h5 class="card-title">{{ flow.flowname }}</h5>
+              <button style="margin:10px" (click)="treeFn(flow._id)">Tree</button>
+            </div>
+              <p class="card-text">Created On: {{ flow.createdOn | date: 'medium' }}</p>
           </div>
         </div>
       </div>

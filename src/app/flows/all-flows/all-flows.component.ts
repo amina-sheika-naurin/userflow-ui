@@ -46,4 +46,8 @@ export class AllFlowsComponent {
     this.router.navigate(['/single-flow', flow]);
   }
 
+  treeFn(id:any){
+    this.router.navigate(['/tree', id])
+  }
+
 }
