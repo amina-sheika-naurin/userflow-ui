@@ -5,10 +5,24 @@
     <mat-icon>{{ isExpanded ? 'keyboard_arrow_left' : 'keyboard_arrow_right' }}</mat-icon>
   </button>
   <div class="navbar">
-    
     <div class="content">
       <div fxLayout="row" fxLayoutGap="16px" fxLayoutAlign="start start">
         <div *ngIf="flowData?.length > 0">
+          <div class="button-container">
+            <button class="play-button" (click)="togglePlay()">
+              <span *ngIf="isPlaying; else pauseIcon">Pause</span>
+              <ng-template #pauseIcon>
+                Play
+              </ng-template>
+            </button>
+            <button class="simulate-button" (click)="toggleSimulate()">
+              <span *ngIf="isSimulating; else simulateIcon">Stop Simulation</span>
+              <ng-template #simulateIcon>
+                Simulate
+              </ng-template>
+            </button>
+          </div>
+          
           <div *ngFor="let data of flowData" class="card-container">
             <mat-card class="card image-card" >
               <div *ngIf="data.base" class="image-container">
@@ -20,13 +34,13 @@
       </div>
     </div>
   </div>
-  <div>
+
 
   <div class="image-display" *ngIf="showImage" (mouseleave)="removeHighlight()">
     <div class="image-container" style="margin: 10px;  ">
-      <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)" alt="Enlarged Screenshot" (mousemove)="mousemove($event)" />
+      <img id="image" [src]="convertBase64ToImage(enlargedImageUrl)"  (mousemove)="mousemove($event)" />
       <div id="box"  style="pointer-events: none;"></div>
-      <div id="interactedbox"   (mouseenter)="removeHighlight()" (click)="redirect()"></div>
+      <div  class="interactedbox" id="interactedbox"   (mouseenter)="removeHighlight()" (click)="redirect()"></div>
     </div> 
     <div class="response-container" *ngIf="doc"  >
       <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: [doc] }"></ng-container> 
@@ -52,11 +66,16 @@
         </ng-container>
       </ng-template>
     </div>
-    
-
-  </div>    
+  </div>   
+  <div class="playflow" *ngIf="isPlaying">
+    <div class="image-container" style="margin: 10px;  ">
+      <img id="play-image" [src]="currentImageSrc" >
+      <div id="play-interactedbox" ></div>
+      <p id="play-description"></p>
+    </div>
+  </div> 
 </div>
-</div>
+<!-- </div> -->
 
 <!-- <div class="response-container" *ngIf="doc" >
       <ng-container *ngTemplateOutlet="recursiveList; context: { $implicit: [doc] }"></ng-container>  

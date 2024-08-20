@@ -1,6 +1,7 @@
 import { Component } from '@angular/core' 
 import { ActivatedRoute } from '@angular/router' 
 import { ApiService } from '../api.service' 
+import { switchMap } from 'rxjs/operators';
 
 @Component({
   selector: 'app-single-flow',
@@ -21,10 +22,22 @@ export class SingleFlowComponent {
   boxWidth: number = 0 
   boxHeight: number = 0 
   nodes: any=[] 
+  isPlaying: boolean = false;
+  showImage: boolean = false 
+  enlargedImageUrl: string = '' 
+  currentImageIndex: number = 0
+  currentImageSrc: string = '';
+  playInterval: any;
+  imageHeight:any
+  isSimulating: boolean = false
+  simulationInterval: any;
+  actionPayload:any;
+
+  
+
   constructor(
     private route: ActivatedRoute, 
     private apiService: ApiService, 
-    // private parser:DOMParser
   ) { }
 
   ngOnInit(): void {
@@ -35,6 +48,8 @@ export class SingleFlowComponent {
       ({
         next: (resp: any) => {
           this.flowData = resp.bases
+          this.showLargeImage(this.flowData[0]._id, this.flowData[0].base, this.flowData[0].html);
+          this.imageHeight = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'];
           this.showLoader = false
         }, 
         error(err) {
@@ -48,16 +63,234 @@ export class SingleFlowComponent {
     return 'data:image/jpeg;base64,' + base64Data 
   }
 
-  // convertBase64ToImageStoreShape(base64Data: string): string {
-  //   return 'data:image/jpeg;base64,' + base64Data;
+  
+  togglePlay() {
+    this.isPlaying = !this.isPlaying;
+    if (this.isPlaying) {
+      this.showImage = false;
+      this.playflow(); 
+      this.playInterval = setInterval(() => {
+        this.playflow(); 
+      }, 1500);
+    } else {
+      if (this.playInterval) {
+        clearInterval(this.playInterval);
+      }
+      this.showImage = true;
+    }
+  }
+
+
+  playflow() {
+    if (this.currentImageIndex < this.flowData.length) {
+      this.currentImageSrc = 'data:image/jpeg;base64,' + this.flowData[this.currentImageIndex].base;
+      this.updateInteractedObjects(this.flowData[this.currentImageIndex]._id);
+      this.currentImageIndex++;
+    } else {
+      this.currentImageIndex = 0;
+      this.currentImageSrc = this.flowData[this.currentImageIndex].base;
+      this.updateInteractedObjects(this.flowData[this.currentImageIndex]._id);
+    }
+  }
+
+  toggleSimulate() {
+    this.isSimulating = !this.isSimulating
+    if (this.isSimulating) {
+      this.launchUrl()
+    }
+    else{
+      this.closeDriver()
+    }
+  }
+
+  closeDriver(){
+    this.apiService.closeDriver().subscribe({
+      next: (resp: any) =>{
+        console.log(resp)
+      },
+      error(err){
+        console.error('Error closing driver:', err);
+      },
+    })
+  }
+  
+  // async launchUrl() {
+  //   try {
+  //     const launchResp = await this.apiService.launchUrl(this.flowData[0].page_URL).toPromise()
+  //     console.log('Launch URL response:', launchResp)
+
+      
+  
+  //     for (let i = 0; i < this.flowData.length; i++) {
+  //       let item = this.flowData[i];
+  //       console.log(`Processing item with ID: ${item._id}`)
+  
+  //       try {
+  //         let compResp = await this.apiService.getComponents(item._id).toPromise()
+  //         console.log('Components response:', compResp)
+  
+  //         if (compResp.objects.length>0) {
+  //           let bounds = compResp.objects[0].objectbounds
+  //           console.log('Component bounds:', bounds)
+  
+  //           this.actionPayload = {
+  //             "top": bounds.top,
+  //             "right": bounds.right,
+  //             "left": bounds.left,
+  //             "bottom": bounds.bottom,
+  //             "height": JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'],
+  //             "width": JSON.parse(this.doc.parentNode.attributes['bounds'].value)['width'],
+  //             "inputtext" : compResp.objects[0].inputText
+  //           };
+  
+  //           console.log('Action payload:', this.actionPayload)
+  //         } else {
+  //           console.warn('No objects found in components response.')
+  //         }
+  //         this.showLoader = false
+  
+  //         const actionResp = await this.apiService.performAction(this.actionPayload).toPromise()
+  //         console.log('Perform action response:', actionResp)
+  
+  //       } catch (compError) {
+  //         console.error('Error fetching components or performing action:', compError)
+  //       }
+  //     }
+  
+  //   } catch (launchError) {
+  //     console.error('Error launching URL:', launchError)
+  //   }
   // }
 
-  // isImage(item: any): boolean {
-  //   return !!item.base;
-  // }
+  async launchUrl() {
+    // Helper function to create a delay
+    const delay = (ms: number | undefined) => new Promise(resolve => setTimeout(resolve, ms));
+    
+    try {
+      const launchResp = await this.apiService.launchUrl(this.flowData[0].page_URL).toPromise();
+      console.log('Launch URL response:', launchResp);
+    
+      for (let i = 0; i < this.flowData.length; i++) {
+        if (!this.isSimulating) {
+          console.log('Simulation is false. Terminating the loop.');
+          break; // Exit the loop
+      }
 
-  showImage: boolean = false 
-  enlargedImageUrl: string = '' 
+        let item = this.flowData[i];
+        // console.log(`Processing item with ID: ${item._id}`);
+    
+        try {
+          let compResp = await this.apiService.getComponents(item._id).toPromise();
+          // console.log('Components response:', compResp);
+    
+          if (compResp.objects.length > 0) {
+            let bounds = compResp.objects[0].objectbounds;
+            // console.log('Component bounds:', bounds);
+    
+            this.actionPayload = {
+              "top": bounds.top,
+              "right": bounds.right,
+              "left": bounds.left,
+              "bottom": bounds.bottom,
+              "height": JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'],
+              "width": JSON.parse(this.doc.parentNode.attributes['bounds'].value)['width'],
+              "inputtext": compResp.objects[0].inputText
+            };
+    
+            console.log('Action payload:', this.actionPayload);
+          } else {
+            console.warn('No objects found in components response.');
+          }
+          this.showLoader = false;
+    
+          const actionResp = await this.apiService.performAction(this.actionPayload).toPromise();
+          console.log('Perform action response:', actionResp);
+    
+        } catch (compError) {
+          console.error('Error fetching components or performing action:', compError);
+        }
+    
+        // Delay before processing the next item
+        await delay(3000); // 1500 milliseconds = 1.5 seconds
+    
+      }
+    
+    } catch (launchError) {
+      console.error('Error launching URL:', launchError);
+    }
+  }
+  
+  
+  
+  
+
+  updateInteractedObjects(baseid: any) {
+    this.apiService.getComponents(baseid).subscribe({
+      next: (resp: any) => {
+        if(resp.objects.length>0){
+          this.highlightPlayInteractedObjects(resp.objects);
+        }
+        this.showLoader = false;
+      },
+      error(err) {
+        console.error('Error fetching components:', err);
+      },
+    })
+  }
+
+  highlightPlayInteractedObjects(interactedobjects: any) {
+    // const imageHeight = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'];
+    let image: any = document.getElementById("play-image");
+    let aratio = parseInt(this.imageHeight) / parseInt(image?.offsetHeight);
+  
+    let bounds = interactedobjects[0].objectbounds;
+  
+    let canvas: any = document.getElementById("play-image");
+    let height = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'];
+    let width = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['width'];
+    let aratioh = parseInt(height) / parseInt(canvas?.offsetHeight);
+    let aratiow = parseInt(width) / parseInt(canvas?.offsetWidth);
+  
+    let x = 0, y = 0;
+  
+    if (bounds.left != 0) x = bounds.left / aratio;
+    if (bounds.top != 0) y = bounds.top / aratio;
+  
+    let spy: any = document.getElementById("play-interactedbox");
+    let description: any = document.getElementById("play-description");
+  
+    spy.style.border = "#008000";
+    spy.style.borderStyle = "solid";
+    spy.style.position = "absolute";
+    spy.style.height = bounds.height / aratioh + 7 + "px";
+    spy.style.width = bounds.width / aratiow + "px";
+    spy.style.top = (y - 6) + "px";
+    spy.style.left = (x - 2) + "px";
+  
+    description.style.position = "absolute";
+    const descWidth = description.offsetWidth;
+    const descHeight = description.offsetHeight;
+
+    let descX = x - 2;
+    let descY = y - 6 - descHeight - 10; // Default to above the interactedbox
+  
+    // if description goes out of bounds
+    if (descX < 0) descX = 0; // Prevent going out of left side
+    if (descX + descWidth > canvas.offsetWidth) descX = canvas.offsetWidth - descWidth; // Prevent going out of right side
+  
+    if (descY < 0) descY = y + bounds.height / aratioh + 10; // Position below if going out of top
+    if (descY + descHeight > canvas.offsetHeight) descY = canvas.offsetHeight - descHeight; // Prevent going out of bottom
+  
+    const interactedboxRect = spy.getBoundingClientRect();    
+    if (descY + descHeight > interactedboxRect.top) {
+      descY = interactedboxRect.top - descHeight + 70; // Position above if overlapping
+    }
+  
+    description.style.left = descX + "px";
+    description.style.top = descY + "px";
+    description.innerText = interactedobjects[0].description;
+  }
+  
 
   showLargeImage(baseid:any,imageUrl: any, html: string) {
     this.showImage = true 
@@ -68,7 +301,7 @@ export class SingleFlowComponent {
     this.apiService.getComponents(baseid).subscribe({
       next: (resp: any) => {
         this.interactedobjects = resp.objects
-        this.higlightInteractedObjects(this.interactedobjects)
+        this.highlightInteractedObjects(this.interactedobjects)
         // this.responseData = resp.components
         this.showLoader = false
       },
@@ -76,53 +309,40 @@ export class SingleFlowComponent {
       },
     })
   }
-  higlightInteractedObjects(interactedobjects:any)
-  {
-    const imageheight = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height']
-    let image:any = document.getElementById("image");
-    let aratio = parseInt(imageheight)/parseInt(image?.offsetHeight)
-    // this.locateNode(aratio,item)
   
-    let bounds = interactedobjects[0].objectbounds
-    let canvas:any = document.getElementById("image");
-    let height= JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height']
-    let width= JSON.parse(this.doc.parentNode.attributes['bounds'].value)['width']
-    let aratioh = parseInt(height)/parseInt(canvas?.offsetHeight)
-    let aratiow = parseInt(width)/parseInt(canvas?.offsetWidth)
+  highlightInteractedObjects(interactedobjects: any) {
+    // const imageHeight = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'];
+    let image: any = document.getElementById("image");
+    let aratio = parseInt(this.imageHeight) / parseInt(image?.offsetHeight);
+  
+    let bounds = interactedobjects[0].objectbounds;
+  
+    let canvas: any = document.getElementById("image");
+    let height = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['height'];
+    let width = JSON.parse(this.doc.parentNode.attributes['bounds'].value)['width'];
+    let aratioh = parseInt(height) / parseInt(canvas?.offsetHeight);
+    let aratiow = parseInt(width) / parseInt(canvas?.offsetWidth);
+  
     let x = 0, y = 0;
- 
-    if (bounds.left != 0)
-      x = bounds.left / aratio;
- 
-    if (bounds.top != 0)
-      y = bounds.top / aratio;
-
-    // if (this.selDevice.technologyType.toLowerCase() === 'android') {
-    
-      let spy:any = document.getElementById("interactedbox");
-      // spy.style.border = "black";
-      spy.style.border = "#008000";
-      spy.style.borderStyle = "solid";
-      spy.style.position = "absolute";
-      spy.style.height = bounds.height/ aratioh + 7 + "px";
-      spy.style.width = bounds.width / aratiow  + "px";
-      spy.style.top = (y - 6)+ "px";
-      spy.style.left = (x - 2) + "px";
-      // spy.style.boxShadow = "inset #f7e5e4 0px 0px 60px -12px";
-
+  
+    if (bounds.left != 0) x = bounds.left / aratio;
+    if (bounds.top != 0) y = bounds.top / aratio;
+  
+    let spy: any = document.getElementById("interactedbox");
+  
+    spy.style.border = "#008000";
+    spy.style.borderStyle = "solid";
+    spy.style.position = "absolute";
+    spy.style.height = bounds.height / aratioh + 7 + "px";
+    spy.style.width = bounds.width / aratiow + "px";
+    spy.style.top = (y - 6) + "px";
+    spy.style.left = (x - 2) + "px";
   }
-
+  
+  
   redirect(){
     let redirectionbaseid = this.interactedobjects[0].redirectedbaseid
     let matchingObject = this.flowData.find((obj: { _id: any }) => obj._id === redirectionbaseid);
-
-    if (matchingObject) {
-        // Do something with matchingObject, for example:
-        console.log(matchingObject);
-        // You can perform further actions based on the matching object
-    } else {
-        console.log("No matching object found in flowData");
-    }
     this.showLargeImage(matchingObject._id,matchingObject.base, matchingObject.html)
     this.convertBase64ToImage(matchingObject.base)
   }
