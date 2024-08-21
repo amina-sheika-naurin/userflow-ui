@@ -1,3 +1,33 @@
+@media only screen and (max-width: 1516px) {
+  .tree {
+    width:2000px;
+    overflow-x: scroll;
+  ::-webkit-scrollbar {
+    height: 8px;
+  }
+
+  ::-webkit-scrollbar-track {
+    background: transparent; 
+  }
+
+  ::-webkit-scrollbar-thumb {
+    background: rgba(0, 0, 0, 0.5); 
+    border-radius: 4px; 
+  }
+
+  ::-webkit-scrollbar-thumb:hover {
+    background: rgba(0, 0, 0, 0.7); 
+  }
+
+  ::-webkit-scrollbar-thumb:active {
+    background: rgba(0, 0, 0, 0.9);
+  }
+
+  scrollbar-width: thin; 
+  scrollbar-color: rgba(0, 0, 0, 0.5) transparent;
+}
+}
+
 .tree ul {
   padding-top: 20px;
   position: relative;
@@ -70,16 +100,6 @@
   display: inline-block;
   border-radius: 5px;
   transition: all 0.5s;
-}
-
-.tree li span:hover, .tree li span:hover+ul li span {
-  background: #c8e4f8;
-  color: #000;
-  border: 1px solid #94a0b4;
-}
-
-.tree li span:hover+ul li::after, .tree li span:hover+ul li::before, .tree li span:hover+ul::before, .tree li span:hover+ul ul::before {
-  border-color: #94a0b4;
 }
 
 .modal-content {

@@ -50,11 +50,11 @@ export class TreeFlowComponent {
                 baseNode.children = interactedObjects.map((obj: any) => ({
                   name: count++,
                   data: obj
-                }));
+                }))
               }
-            });
+            })
             return baseNode
-          });
+          })
   
           rootNode.children = baseNodes
           this.treeData = [rootNode]
