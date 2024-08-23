@@ -23,6 +23,7 @@ export class TreeFlowComponent {
   treeData: TreeNode[] = []
   showImage:any
   baseImage:any
+  baseData:any
 
   constructor(
     private route: ActivatedRoute, 
@@ -33,38 +34,67 @@ export class TreeFlowComponent {
     this.loadTreeData()
   }
 
-    async loadTreeData() {
-      this.flowId = this.route.snapshot.paramMap.get('id')
-      await this.apiService.getFlow(this.flowId).subscribe({
-        next: (resp: any) => {
-          let count=1
-          const rootNode: TreeNode = { name: count++, children: [], data:[] }
-          const flowData = resp.bases
-          
-          const baseNodes = flowData.map((base: any) => {
-            const baseNode: TreeNode = { name: count++, children: [], data: base }
-  
-            this.apiService.getComponents(base._id).subscribe({
-              next: (resp: any) => {
-                const interactedObjects = resp.objects
-                baseNode.children = interactedObjects.map((obj: any) => ({
-                  name: count++,
-                  data: obj
-                }))
-              }
-            })
-            return baseNode
-          })
-  
-          rootNode.children = baseNodes
-          this.treeData = [rootNode]
-        }
-      });
+  async loadTreeData() {
+    this.flowId = this.route.snapshot.paramMap.get('id');
+    const flowData = await this.apiService.getFlow(this.flowId).toPromise();
+    if (flowData && flowData.bases.length > 0) {
+      let count = 1;
+      const firstBase = flowData.bases[0];
+      this.baseData=flowData.bases
+      const rootNode: TreeNode = { name: count++, children: [], data: firstBase };
+      await this.buildTree(rootNode, firstBase._id, count);
+      this.treeData = [rootNode];
     }
-
-    openModal(obj:any,base:any){
-      this.showImage=this.convertBase64ToImage(obj.data.elementImage)
-      this.baseImage=this.convertBase64ToImage(base.data.base)
+  }
+    
+  async buildTree(node: TreeNode, baseId: string, count: number) {
+    const interactedObjects = await this.apiService.getComponents(baseId).toPromise();
+    const redirectedBaseMap: { [key: string]: TreeNode } = {};
+    node.children = await Promise.all(
+      interactedObjects.objects.map(async (obj: any) => {
+      const objNode: TreeNode = { name: count++, data: obj, children: [] };
+      if (obj.redirectedbaseid && obj.redirectedbaseid !== 'None' && baseId!=obj.redirectedbaseid) {
+        if (!redirectedBaseMap[obj.redirectedbaseid]) {
+          redirectedBaseMap[obj.redirectedbaseid] = {
+            name: count++,
+            data: null, 
+            children: []
+          }
+          for(let i of this.baseData){
+            if(i._id==obj.redirectedbaseid){
+              redirectedBaseMap[obj.redirectedbaseid] = {
+                name: count++,
+                data: i, 
+                children: []
+              }
+            }
+          }
+          await this.buildTree(redirectedBaseMap[obj.redirectedbaseid], obj.redirectedbaseid, count);
+        }
+        objNode.children?.push(redirectedBaseMap[obj.redirectedbaseid]);
+      }
+      return objNode;
+      })
+    );
+  }
+    
+    openModal(obj:any,base:any,node:any){
+      this.showImage=null
+      this.baseImage=null
+      if(node!=null){
+        if(node.data.elementImage){
+          this.showImage=this.convertBase64ToImage(node.data.elementImage)
+        }
+        else{
+          this.baseImage=this.convertBase64ToImage(node.data.base)
+        }
+      }
+      else if(base!=null){
+        this.baseImage=this.convertBase64ToImage(base[0].data.base)
+      }
+      else if(obj!=null){
+        this.showImage=this.convertBase64ToImage(obj.data.elementImage)
+      }
     }
 
     convertBase64ToImage(base64Data: string): string {

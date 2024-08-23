@@ -1,34 +1,45 @@
-    <div class="tree">
+<div class="tree">
+  <ul>
+    <li *ngIf="treeData && treeData.length > 0">
+      <span style="background-color: rgb(192, 192, 212);" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="openModal(null,treeData,null)">{{ treeData[0].name }}</span>
       <ul>
-        <li *ngIf="treeData[0]">
-          <span style="background-color: rgb(156, 156, 185);">{{ treeData[0].name }}</span>
-          <ul>
-            <li *ngFor="let base of treeData[0].children">
-              <span style="background-color: rgb(216, 216, 128);">{{ base.name }}</span>
-              <ul>
-                <li *ngFor="let obj of base.children">
-                  <span style="background-color: rgb(236, 192, 192); cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="openModal(obj, base)">{{ obj.name }}</span>
-                </li>
-              </ul>
-            </li>
-          </ul>
-        </li>
+        <ng-container *ngFor="let base of treeData[0].children">
+          <li>
+            <span style="background-color: rgb(216, 216, 128); cursor: pointer;" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="openModal(base,null,null)">{{ base.name }}</span>
+            <ul *ngIf="base.children && base.children.length > 0">
+              <ng-container *ngTemplateOutlet="recursiveTree; context: { nodes: base.children }"></ng-container>
+            </ul>
+          </li>
+        </ng-container>
       </ul>
-    </div>
-
+    </li>
+  </ul>
+    
+  <ng-template #recursiveTree let-nodes="nodes">
+    <ng-container *ngFor="let node of nodes">
+      <li>
+        <span style="background-color: rgb(236, 192, 192);" data-bs-toggle="modal" data-bs-target="#exampleModal" (click)="openModal(null,null, node)">{{ node.name }}</span>
+        <ul *ngIf="node.children && node.children.length > 0">
+          <ng-container *ngTemplateOutlet="recursiveTree; context: { nodes: node.children }"></ng-container>
+        </ul>
+      </li>
+    </ng-container>
+  </ng-template>
+</div>
+    
 <div class="modal fade" id="exampleModal" tabindex="-1" aria-labelledby="exampleModalLabel" aria-hidden="true">
-    <div class="modal-dialog">
-      <div class="modal-content">
-        <div class="modal-header">
-          <h2 class="modal-title" id="exampleModalLabel">Image</h2>
-          <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-        </div>
-        <div class="modal-body">
-            <h3>Base Image</h3>
-            <img [src]="baseImage" width="800px">
-            <h3>Element Image</h3>
-            <img [src]="showImage" width="800px">
-        </div>
+  <div class="modal-dialog">
+    <div class="modal-content">
+      <div class="modal-header">
+        <h2 class="modal-title" id="exampleModalLabel">Image</h2>
+        <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+      </div>
+      <div class="modal-body">
+        <h3 *ngIf="baseImage">Base Image</h3>
+        <img [src]="baseImage" width="800px">
+        <h3 *ngIf="showImage">Element Image</h3>
+        <img [src]="showImage" width="800px">
       </div>
     </div>
+  </div>
 </div>
